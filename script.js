@@ -7,6 +7,42 @@ const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mldazoje';
 // Set to true to use Formspree, false to use Netlify Functions
 const USE_FORMSPREE = true;
 
+// ============================================
+// ImgBB Configuration (for image uploads)
+// ============================================
+// Get your free API key from: https://api.imgbb.com/
+// Just sign up and get your key - it's free!
+const IMGBB_API_KEY = 'YOUR_IMGBB_API_KEY'; // Replace with your ImgBB API key
+
+// Function to upload image to ImgBB
+async function uploadImageToImgBB(file) {
+    return new Promise((resolve, reject) => {
+        const formData = new FormData();
+        formData.append('key', IMGBB_API_KEY);
+        formData.append('image', file);
+        
+        fetch('https://api.imgbb.com/1/upload', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                resolve({
+                    url: data.data.url,
+                    deleteUrl: data.data.delete_url,
+                    thumbUrl: data.data.thumb?.url || data.data.url
+                });
+            } else {
+                reject(new Error(data.error?.message || 'Failed to upload image'));
+            }
+        })
+        .catch(error => {
+            reject(error);
+        });
+    });
+}
+
 document.getElementById('workoutForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -85,10 +121,29 @@ document.getElementById('workoutForm').addEventListener('submit', async function
                 formData.append('exercises', 'No exercises recorded');
             }
             
-            // Attachment
+            // Handle attachment - upload image to ImgBB if it's an image
             const attachment = document.getElementById('attachment').files[0];
+            let attachmentUrl = null;
+            
             if (attachment) {
-                formData.append('attachment', attachment);
+                // Check if it's an image
+                if (attachment.type && attachment.type.startsWith('image/')) {
+                    // Upload image to ImgBB
+                    try {
+                        messageDiv.textContent = 'Uploading image...';
+                        const imageData = await uploadImageToImgBB(attachment);
+                        attachmentUrl = imageData.url;
+                        formData.append('attachment_url', attachmentUrl);
+                        formData.append('attachment_info', `Image uploaded: ${attachment.name}\nView image: ${attachmentUrl}`);
+                    } catch (error) {
+                        console.error('Image upload error:', error);
+                        // If upload fails, just include file info
+                        formData.append('attachment_info', `Image upload failed: ${attachment.name} (${(attachment.size / 1024).toFixed(2)} KB). Error: ${error.message}`);
+                    }
+                } else {
+                    // For non-image files, just include info
+                    formData.append('attachment_info', `File attached: ${attachment.name} (${(attachment.size / 1024).toFixed(2)} KB, Type: ${attachment.type || 'Unknown'})\nNote: Only images can be uploaded. Other file types will be listed in the email.`);
+                }
             }
             
             // Send to Formspree
@@ -120,19 +175,27 @@ document.getElementById('workoutForm').addEventListener('submit', async function
                     document.getElementById(`exercise${i}_sets_container`).innerHTML = '';
                 }
             } else {
-                // Error
+                // Error - check for specific Formspree errors
+                let errorMessage = 'Please try again';
+                if (result.error) {
+                    errorMessage = result.error;
+                    // Handle Formspree specific errors
+                    if (result.error.includes('File Uploads Not Permitted') || result.error.includes('file') || result.error.includes('File')) {
+                        errorMessage = 'File uploads are not supported in Formspree free plan. Please remove the file and try again, or use Netlify Functions for file uploads.';
+                    }
+                }
                 messageDiv.className = 'message error';
-                messageDiv.textContent = '❌ Error sending form: ' + (result.error || 'Please try again');
+                messageDiv.textContent = '❌ Error sending form: ' + errorMessage;
             }
         } else {
             // ============================================
             // Netlify Functions Submission (Original)
             // ============================================
-            const formData = new FormData();
-            
+        const formData = new FormData();
+        
             // Personal info (name and email are required, others are optional)
-            formData.append('name', document.getElementById('name').value);
-            formData.append('email', document.getElementById('email').value);
+        formData.append('name', document.getElementById('name').value);
+        formData.append('email', document.getElementById('email').value);
             
             // Optional fields - only append if they have values
             const weight = document.getElementById('weight').value;
@@ -163,37 +226,37 @@ document.getElementById('workoutForm').addEventListener('submit', async function
                     }
                 }
             }
+        
+        // Attachment
+        const attachment = document.getElementById('attachment').files[0];
+        if (attachment) {
+            formData.append('attachment', attachment);
+        }
+        
+        // Send to Netlify function
+        const response = await fetch('/.netlify/functions/send-email', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            // Success
+            messageDiv.className = 'message success';
+            messageDiv.textContent = '✅ Form submitted successfully! Thank you.';
             
-            // Attachment
-            const attachment = document.getElementById('attachment').files[0];
-            if (attachment) {
-                formData.append('attachment', attachment);
-            }
-            
-            // Send to Netlify function
-            const response = await fetch('/.netlify/functions/send-email', {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (response.ok) {
-                // Success
-                messageDiv.className = 'message success';
-                messageDiv.textContent = '✅ Form submitted successfully! Thank you.';
-                
-                // Reset form
-                document.getElementById('workoutForm').reset();
-                // Reset file preview
-                fileUploadContent.style.display = 'flex';
-                filePreview.style.display = 'none';
-                previewImage.src = '';
-                previewImage.style.display = 'none';
-            } else {
-                // Error
-                messageDiv.className = 'message error';
-                messageDiv.textContent = '❌ Error sending form: ' + (result.error || 'Please try again');
+            // Reset form
+            document.getElementById('workoutForm').reset();
+            // Reset file preview
+            fileUploadContent.style.display = 'flex';
+            filePreview.style.display = 'none';
+            previewImage.src = '';
+            previewImage.style.display = 'none';
+        } else {
+            // Error
+            messageDiv.className = 'message error';
+            messageDiv.textContent = '❌ Error sending form: ' + (result.error || 'Please try again');
             }
         }
     } catch (error) {
