@@ -2,7 +2,7 @@
 // Formspree Configuration
 // ============================================
 // Formspree endpoint - emails will be sent to talkhanahmed422@gmail.com
-const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mldazoje';
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/xvgdeevk';
 
 // Set to true to use Formspree, false to use Netlify Functions
 const USE_FORMSPREE = true;
