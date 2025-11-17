@@ -12,7 +12,7 @@ const USE_FORMSPREE = true;
 // ============================================
 // Get your free API key from: https://api.imgbb.com/
 // Just sign up and get your key - it's free!
-const IMGBB_API_KEY = 'YOUR_IMGBB_API_KEY'; // Replace with your ImgBB API key
+const IMGBB_API_KEY = 'ae7dc70d11418011dd1c6b191414af1e'; // ImgBB API key
 
 // Function to upload image to ImgBB
 async function uploadImageToImgBB(file) {
