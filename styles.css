@@ -94,6 +94,39 @@ form {
     font-weight: 700;
 }
 
+.sets-container {
+    margin-top: 15px;
+}
+
+.set-group {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    border: 2px solid #e0e0e0;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.set-group:hover {
+    border-color: #b8860b;
+    box-shadow: 0 2px 8px rgba(184, 134, 11, 0.1);
+}
+
+.set-header {
+    font-weight: 600;
+    color: #b8860b;
+    margin-bottom: 10px;
+    font-size: 1em;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.set-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
 .form-group {
     margin-bottom: 20px;
 }
@@ -359,5 +392,9 @@ button[type="submit"]:disabled {
 
     .exercise-group {
         padding: 15px;
+    }
+
+    .set-fields {
+        grid-template-columns: 1fr;
     }
 }

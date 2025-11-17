@@ -155,13 +155,24 @@ async function sendEmail(parsedData, attachment, attachmentName, attachmentType)
                     
                     <div class="section">
                         <h3>Exercises</h3>
-                        ${[1, 2, 3, 4].map(i => `
-                            <div class="exercise">
-                                <h4>${exerciseNames[i - 1]}</h4>
-                                <p><span class="label">Number of Sets:</span> ${parsedData[`exercise${i}_sets`] || 'Not specified'}</p>
-                                <p><span class="label">Reps per Set:</span> ${parsedData[`exercise${i}_reps`] || 'Not specified'}</p>
-                            </div>
-                        `).join('')}
+                        ${[1, 2, 3, 4].map(i => {
+                            const numSets = parseInt(parsedData[`exercise${i}_sets`]) || 0;
+                            let setsHtml = '';
+                            
+                            for (let j = 1; j <= numSets; j++) {
+                                const reps = parsedData[`exercise${i}_set${j}_reps`] || 'N/A';
+                                const weight = parsedData[`exercise${i}_set${j}_weight`] || 'N/A';
+                                setsHtml += `<p style="margin: 5px 0; padding-left: 20px;">Set ${j}: ${reps} reps × ${weight} kg</p>`;
+                            }
+                            
+                            return `
+                                <div class="exercise">
+                                    <h4>${exerciseNames[i - 1]}</h4>
+                                    <p><span class="label">Number of Sets:</span> ${numSets}</p>
+                                    ${setsHtml || '<p>No sets specified</p>'}
+                                </div>
+                            `;
+                        }).join('')}
                     </div>
                     
                     ${attachment ? `<div class="section"><p><span class="label">Attachment:</span> ${attachmentName}</p></div>` : ''}
@@ -181,11 +192,22 @@ Personal Information:
 - Date: ${parsedData.date || 'Not specified'}
 
 Exercises:
-${[1, 2, 3, 4].map(i => `
+${[1, 2, 3, 4].map(i => {
+    const numSets = parseInt(parsedData[`exercise${i}_sets`]) || 0;
+    let setsText = '';
+    
+    for (let j = 1; j <= numSets; j++) {
+        const reps = parsedData[`exercise${i}_set${j}_reps`] || 'N/A';
+        const weight = parsedData[`exercise${i}_set${j}_weight`] || 'N/A';
+        setsText += `   Set ${j}: ${reps} reps × ${weight} kg\n`;
+    }
+    
+    return `
 ${i}. ${exerciseNames[i - 1]}:
-   - Number of Sets: ${parsedData[`exercise${i}_sets`] || 'Not specified'}
-   - Reps per Set: ${parsedData[`exercise${i}_reps`] || 'Not specified'}
-`).join('')}
+   - Number of Sets: ${numSets}
+${setsText || '   - No sets specified'}
+`;
+}).join('')}
 
 ${attachment ? `Attachment: ${attachmentName}` : ''}
     `;

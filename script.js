@@ -27,15 +27,19 @@ document.getElementById('workoutForm').addEventListener('submit', async function
         formData.append('weight', document.getElementById('weight').value);
         formData.append('date', document.getElementById('date').value);
         
-        // Exercises
-        formData.append('exercise1_sets', document.getElementById('exercise1_sets').value);
-        formData.append('exercise1_reps', document.getElementById('exercise1_reps').value);
-        formData.append('exercise2_sets', document.getElementById('exercise2_sets').value);
-        formData.append('exercise2_reps', document.getElementById('exercise2_reps').value);
-        formData.append('exercise3_sets', document.getElementById('exercise3_sets').value);
-        formData.append('exercise3_reps', document.getElementById('exercise3_reps').value);
-        formData.append('exercise4_sets', document.getElementById('exercise4_sets').value);
-        formData.append('exercise4_reps', document.getElementById('exercise4_reps').value);
+        // Exercises - collect sets data dynamically
+        for (let i = 1; i <= 4; i++) {
+            const numSets = parseInt(document.getElementById(`exercise${i}_sets`).value) || 0;
+            formData.append(`exercise${i}_sets`, numSets);
+            
+            // Collect reps and weight for each set
+            for (let j = 1; j <= numSets; j++) {
+                const reps = document.getElementById(`exercise${i}_set${j}_reps`)?.value || '';
+                const weight = document.getElementById(`exercise${i}_set${j}_weight`)?.value || '';
+                formData.append(`exercise${i}_set${j}_reps`, reps);
+                formData.append(`exercise${i}_set${j}_weight`, weight);
+            }
+        }
         
         // Attachment
         const attachment = document.getElementById('attachment').files[0];
@@ -81,6 +85,42 @@ document.getElementById('workoutForm').addEventListener('submit', async function
 
 // Set today's date as default
 document.getElementById('date').valueAsDate = new Date();
+
+// Function to create set fields dynamically
+function createSetFields(exerciseNum, numSets) {
+    const container = document.getElementById(`exercise${exerciseNum}_sets_container`);
+    container.innerHTML = '';
+    
+    if (numSets > 0) {
+        for (let i = 1; i <= numSets; i++) {
+            const setGroup = document.createElement('div');
+            setGroup.className = 'set-group';
+            setGroup.innerHTML = `
+                <div class="set-header">Set ${i}</div>
+                <div class="set-fields">
+                    <div class="form-group">
+                        <label for="exercise${exerciseNum}_set${i}_reps">Reps</label>
+                        <input type="number" id="exercise${exerciseNum}_set${i}_reps" name="exercise${exerciseNum}_set${i}_reps" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exercise${exerciseNum}_set${i}_weight">Weight (kg)</label>
+                        <input type="number" id="exercise${exerciseNum}_set${i}_weight" name="exercise${exerciseNum}_set${i}_weight" step="0.1" min="0" required>
+                    </div>
+                </div>
+            `;
+            container.appendChild(setGroup);
+        }
+    }
+}
+
+// Add event listeners for sets input changes
+for (let i = 1; i <= 4; i++) {
+    const setsInput = document.getElementById(`exercise${i}_sets`);
+    setsInput.addEventListener('input', function() {
+        const numSets = parseInt(this.value) || 0;
+        createSetFields(i, numSets);
+    });
+}
 
 // File Upload Functionality
 const fileInput = document.getElementById('attachment');
