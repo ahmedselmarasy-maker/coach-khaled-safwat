@@ -17,9 +17,10 @@ A professional web application for personal trainers to track their clients' dai
 ## Tech Stack
 
 - HTML5, CSS3, JavaScript
-- Netlify Functions (Serverless)
+- Formspree (for email sending - recommended)
+- Netlify Functions (Serverless - alternative)
 - Node.js (for local development)
-- Nodemailer (for email sending)
+- Nodemailer (for email sending with Netlify Functions)
 
 ## Project Structure
 
@@ -57,7 +58,7 @@ SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USER=your-email@gmail.com
 SMTP_PASS=your-app-password
-TO_EMAIL=your-email@gmail.com
+TO_EMAIL=talkhanahmed422@gmail.com
 PORT=8888
 ```
 
@@ -71,21 +72,44 @@ npm start
 http://localhost:8888
 ```
 
-## Deployment on Netlify
+## Deployment Options
 
-### Step 1: Push to GitHub
+You have two options for handling form submissions:
+
+### Option 1: Using Formspree (Recommended - Easier)
+
+Formspree is a free service that handles email sending without needing SMTP setup.
+
+**Steps:**
+1. Create account at [Formspree.io](https://formspree.io)
+2. Create a new form and set recipient email to `talkhanahmed422@gmail.com`
+3. Copy your Formspree endpoint URL
+4. Open `script.js` and update:
+   ```javascript
+   const FORMSPREE_ENDPOINT = 'https://formspree.io/f/YOUR_FORM_ID';
+   const USE_FORMSPREE = true;
+   ```
+5. Deploy to Netlify (no environment variables needed!)
+
+**See detailed instructions:** [FORMSPREE_SETUP.md](FORMSPREE_SETUP.md)
+
+### Option 2: Using Netlify Functions (Advanced)
+
+Requires SMTP configuration but gives you full control.
+
+#### Step 1: Push to GitHub
 
 1. Create a new repository on GitHub
 2. Push this project to GitHub
 
-### Step 2: Deploy on Netlify
+#### Step 2: Deploy on Netlify
 
 1. Go to [Netlify](https://www.netlify.com)
 2. Click "New site from Git"
 3. Connect your GitHub repository
 4. Deploy
 
-### Step 3: Configure Environment Variables
+#### Step 3: Configure Environment Variables
 
 In Netlify dashboard, go to:
 **Site settings → Environment variables**
@@ -97,15 +121,19 @@ SMTP_HOST = smtp.gmail.com
 SMTP_PORT = 587
 SMTP_USER = your-email@gmail.com
 SMTP_PASS = your-app-password
-TO_EMAIL = your-email@gmail.com
+TO_EMAIL = talkhanahmed422@gmail.com
 ```
 
-### Step 4: Gmail Setup (if using Gmail)
+**Important:** Replace `your-email@gmail.com` with your actual Gmail address and `your-app-password` with your Gmail app password. The `TO_EMAIL` should be set to `talkhanahmed422@gmail.com` to receive all form submissions.
+
+#### Step 4: Gmail Setup (if using Gmail)
 
 1. Go to [Google Account](https://myaccount.google.com/)
 2. Enable 2-Step Verification
 3. Create [App Password](https://myaccount.google.com/apppasswords)
 4. Use the app password in `SMTP_PASS`
+
+**See detailed instructions:** [NETLIFY_SETUP.md](NETLIFY_SETUP.md)
 
 ## Usage
 

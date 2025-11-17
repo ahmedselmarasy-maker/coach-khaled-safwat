@@ -1,3 +1,12 @@
+// ============================================
+// Formspree Configuration
+// ============================================
+// Formspree endpoint - emails will be sent to talkhanahmed422@gmail.com
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/mldazoje';
+
+// Set to true to use Formspree, false to use Netlify Functions
+const USE_FORMSPREE = true;
+
 document.getElementById('workoutForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -18,59 +27,174 @@ document.getElementById('workoutForm').addEventListener('submit', async function
     messageDiv.style.display = 'block';
     
     try {
-        // Get form data
-        const formData = new FormData();
-        
-        // Personal info
-        formData.append('name', document.getElementById('name').value);
-        formData.append('email', document.getElementById('email').value);
-        formData.append('weight', document.getElementById('weight').value);
-        formData.append('date', document.getElementById('date').value);
-        
-        // Exercises - collect sets data dynamically
-        for (let i = 1; i <= 4; i++) {
-            const numSets = parseInt(document.getElementById(`exercise${i}_sets`).value) || 0;
-            formData.append(`exercise${i}_sets`, numSets);
+        if (USE_FORMSPREE) {
+            // ============================================
+            // Formspree Submission
+            // ============================================
+            const formData = new FormData();
             
-            // Collect reps and weight for each set
-            for (let j = 1; j <= numSets; j++) {
-                const reps = document.getElementById(`exercise${i}_set${j}_reps`)?.value || '';
-                const weight = document.getElementById(`exercise${i}_set${j}_weight`)?.value || '';
-                formData.append(`exercise${i}_set${j}_reps`, reps);
-                formData.append(`exercise${i}_set${j}_weight`, weight);
+            // Personal info (name and email are required, others are optional)
+            formData.append('name', document.getElementById('name').value);
+            formData.append('email', document.getElementById('email').value);
+            
+            // Optional fields - only append if they have values
+            const weight = document.getElementById('weight').value;
+            if (weight) {
+                formData.append('weight', weight + ' kg');
             }
-        }
-        
-        // Attachment
-        const attachment = document.getElementById('attachment').files[0];
-        if (attachment) {
-            formData.append('attachment', attachment);
-        }
-        
-        // Send to Netlify function
-        const response = await fetch('/.netlify/functions/send-email', {
-            method: 'POST',
-            body: formData
-        });
-        
-        const result = await response.json();
-        
-        if (response.ok) {
-            // Success
-            messageDiv.className = 'message success';
-            messageDiv.textContent = '✅ Form submitted successfully! Thank you.';
             
-            // Reset form
-            document.getElementById('workoutForm').reset();
-            // Reset file preview
-            fileUploadContent.style.display = 'flex';
-            filePreview.style.display = 'none';
-            previewImage.src = '';
-            previewImage.style.display = 'none';
+            // Date - use today's date if not provided
+            let dateValue = document.getElementById('date').value;
+            if (!dateValue) {
+                dateValue = new Date().toISOString().split('T')[0];
+            }
+            formData.append('date', dateValue);
+            
+            // Build exercises data as formatted text (only include exercises with sets)
+            const exerciseNames = [
+                '1. Incline DB Press (دامبل عالي للصدر)',
+                '2. Tricep Pushdown (تراي بوش داون)',
+                '3. Wide Lat Pull Down (سحب عالي واسع)',
+                '4. T-Bar Row (سحب عالتي بار)'
+            ];
+            
+            let exercisesText = '';
+            let hasExercises = false;
+            
+            for (let i = 1; i <= 4; i++) {
+                const numSets = parseInt(document.getElementById(`exercise${i}_sets`).value) || 0;
+                
+                // Only include exercise if it has sets
+                if (numSets > 0) {
+                    hasExercises = true;
+                    exercisesText += `\n${exerciseNames[i - 1]}:\n`;
+                    exercisesText += `Number of Sets: ${numSets}\n`;
+                    
+                    for (let j = 1; j <= numSets; j++) {
+                        const reps = document.getElementById(`exercise${i}_set${j}_reps`)?.value || 'N/A';
+                        const weight = document.getElementById(`exercise${i}_set${j}_weight`)?.value || 'N/A';
+                        exercisesText += `  Set ${j}: ${reps} reps × ${weight} kg\n`;
+                    }
+                }
+            }
+            
+            // Only append exercises if there are any
+            if (hasExercises) {
+                formData.append('exercises', exercisesText);
+            } else {
+                formData.append('exercises', 'No exercises recorded');
+            }
+            
+            // Attachment
+            const attachment = document.getElementById('attachment').files[0];
+            if (attachment) {
+                formData.append('attachment', attachment);
+            }
+            
+            // Send to Formspree
+            const response = await fetch(FORMSPREE_ENDPOINT, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Success
+                messageDiv.className = 'message success';
+                messageDiv.textContent = '✅ Form submitted successfully! Thank you.';
+                
+                // Reset form
+                document.getElementById('workoutForm').reset();
+                // Reset file preview
+                fileUploadContent.style.display = 'flex';
+                filePreview.style.display = 'none';
+                previewImage.src = '';
+                previewImage.style.display = 'none';
+                
+                // Clear sets containers
+                for (let i = 1; i <= 4; i++) {
+                    document.getElementById(`exercise${i}_sets_container`).innerHTML = '';
+                }
+            } else {
+                // Error
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '❌ Error sending form: ' + (result.error || 'Please try again');
+            }
         } else {
-            // Error
-            messageDiv.className = 'message error';
-            messageDiv.textContent = '❌ Error sending form: ' + (result.error || 'Please try again');
+            // ============================================
+            // Netlify Functions Submission (Original)
+            // ============================================
+            const formData = new FormData();
+            
+            // Personal info (name and email are required, others are optional)
+            formData.append('name', document.getElementById('name').value);
+            formData.append('email', document.getElementById('email').value);
+            
+            // Optional fields - only append if they have values
+            const weight = document.getElementById('weight').value;
+            if (weight) {
+                formData.append('weight', weight);
+            }
+            
+            // Date - use today's date if not provided
+            let dateValue = document.getElementById('date').value;
+            if (!dateValue) {
+                dateValue = new Date().toISOString().split('T')[0];
+            }
+            formData.append('date', dateValue);
+            
+            // Exercises - collect sets data dynamically (only if sets > 0)
+            for (let i = 1; i <= 4; i++) {
+                const numSets = parseInt(document.getElementById(`exercise${i}_sets`).value) || 0;
+                
+                if (numSets > 0) {
+                    formData.append(`exercise${i}_sets`, numSets);
+                    
+                    // Collect reps and weight for each set
+                    for (let j = 1; j <= numSets; j++) {
+                        const reps = document.getElementById(`exercise${i}_set${j}_reps`)?.value || '';
+                        const weight = document.getElementById(`exercise${i}_set${j}_weight`)?.value || '';
+                        formData.append(`exercise${i}_set${j}_reps`, reps);
+                        formData.append(`exercise${i}_set${j}_weight`, weight);
+                    }
+                }
+            }
+            
+            // Attachment
+            const attachment = document.getElementById('attachment').files[0];
+            if (attachment) {
+                formData.append('attachment', attachment);
+            }
+            
+            // Send to Netlify function
+            const response = await fetch('/.netlify/functions/send-email', {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (response.ok) {
+                // Success
+                messageDiv.className = 'message success';
+                messageDiv.textContent = '✅ Form submitted successfully! Thank you.';
+                
+                // Reset form
+                document.getElementById('workoutForm').reset();
+                // Reset file preview
+                fileUploadContent.style.display = 'flex';
+                filePreview.style.display = 'none';
+                previewImage.src = '';
+                previewImage.style.display = 'none';
+            } else {
+                // Error
+                messageDiv.className = 'message error';
+                messageDiv.textContent = '❌ Error sending form: ' + (result.error || 'Please try again');
+            }
         }
     } catch (error) {
         console.error('Error:', error);
@@ -100,11 +224,11 @@ function createSetFields(exerciseNum, numSets) {
                 <div class="set-fields">
                     <div class="form-group">
                         <label for="exercise${exerciseNum}_set${i}_reps">Reps</label>
-                        <input type="number" id="exercise${exerciseNum}_set${i}_reps" name="exercise${exerciseNum}_set${i}_reps" min="1" required>
+                        <input type="number" id="exercise${exerciseNum}_set${i}_reps" name="exercise${exerciseNum}_set${i}_reps" min="0">
                     </div>
                     <div class="form-group">
                         <label for="exercise${exerciseNum}_set${i}_weight">Weight (kg)</label>
-                        <input type="number" id="exercise${exerciseNum}_set${i}_weight" name="exercise${exerciseNum}_set${i}_weight" step="0.1" min="0" required>
+                        <input type="number" id="exercise${exerciseNum}_set${i}_weight" name="exercise${exerciseNum}_set${i}_weight" step="0.1" min="0">
                     </div>
                 </div>
             `;
