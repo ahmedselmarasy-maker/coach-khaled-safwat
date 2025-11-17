@@ -286,11 +286,11 @@ function createSetFields(exerciseNum, numSets) {
                 <div class="set-header">Set ${i}</div>
                 <div class="set-fields">
                     <div class="form-group">
-                        <label for="exercise${exerciseNum}_set${i}_reps">Reps</label>
+                        <label for="exercise${exerciseNum}_set${i}_reps">Reps ( عدد التكرارات )</label>
                         <input type="number" id="exercise${exerciseNum}_set${i}_reps" name="exercise${exerciseNum}_set${i}_reps" min="0">
                     </div>
                     <div class="form-group">
-                        <label for="exercise${exerciseNum}_set${i}_weight">Weight (kg)</label>
+                        <label for="exercise${exerciseNum}_set${i}_weight">Weight (kg) ( الوزن )</label>
                         <input type="number" id="exercise${exerciseNum}_set${i}_weight" name="exercise${exerciseNum}_set${i}_weight" step="0.1" min="0">
                     </div>
                 </div>
