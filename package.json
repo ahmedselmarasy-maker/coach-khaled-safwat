@@ -1,0 +1,25 @@
+{
+  "name": "workout-tracking-app",
+  "version": "1.0.0",
+  "description": "تطبيق متابعة التمارين اليومية للمدربين",
+  "main": "index.html",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.7",
+    "busboy": "^1.6.0",
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  },
+  "keywords": [
+    "workout",
+    "fitness",
+    "tracking"
+  ],
+  "author": "",
+  "license": "MIT"
+}
+

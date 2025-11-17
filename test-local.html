@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار محلي - نموذج متابعة التمارين</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏋️ نموذج متابعة التمارين اليومية (نسخة اختبار)</h1>
+            <p>املأ النموذج أدناه لتسجيل تمارينك اليومية</p>
+            <p style="background: #fff3cd; padding: 10px; border-radius: 5px; margin-top: 10px;">
+                ⚠️ هذه نسخة اختبار - البيانات ستظهر في Console فقط
+            </p>
+        </header>
+
+        <form id="workoutForm">
+            <div class="form-section">
+                <h2>المعلومات الشخصية</h2>
+                
+                <div class="form-group">
+                    <label for="name">الاسم *</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">البريد الإلكتروني *</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="weight">الوزن (كجم) *</label>
+                    <input type="number" id="weight" name="weight" step="0.1" min="0" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="date">التاريخ *</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>التمارين</h2>
+
+                <div class="exercise-group">
+                    <h3>1. دامبل عالي للصدر (Incline DB Press)</h3>
+                    <div class="form-group">
+                        <label for="exercise1_sets">عدد المجموعات الفعالة *</label>
+                        <input type="number" id="exercise1_sets" name="exercise1_sets" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exercise1_reps">عدد التكرارات لكل مجموعة *</label>
+                        <input type="text" id="exercise1_reps" name="exercise1_reps" placeholder="مثال: 12, 10, 8" required>
+                    </div>
+                </div>
+
+                <div class="exercise-group">
+                    <h3>2. تراي بوش داون (Tricep Pushdown)</h3>
+                    <div class="form-group">
+                        <label for="exercise2_sets">عدد المجموعات الفعالة *</label>
+                        <input type="number" id="exercise2_sets" name="exercise2_sets" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exercise2_reps">عدد التكرارات لكل مجموعة *</label>
+                        <input type="text" id="exercise2_reps" name="exercise2_reps" placeholder="مثال: 15, 12, 10" required>
+                    </div>
+                </div>
+
+                <div class="exercise-group">
+                    <h3>3. سحب عالي واسع (Wide Lat Pull Down)</h3>
+                    <div class="form-group">
+                        <label for="exercise3_sets">عدد المجموعات الفعالة *</label>
+                        <input type="number" id="exercise3_sets" name="exercise3_sets" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exercise3_reps">عدد التكرارات لكل مجموعة *</label>
+                        <input type="text" id="exercise3_reps" name="exercise3_reps" placeholder="مثال: 12, 10, 8" required>
+                    </div>
+                </div>
+
+                <div class="exercise-group">
+                    <h3>4. سحب عالتي بار (T-Bar Row)</h3>
+                    <div class="form-group">
+                        <label for="exercise4_sets">عدد المجموعات الفعالة *</label>
+                        <input type="number" id="exercise4_sets" name="exercise4_sets" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="exercise4_reps">عدد التكرارات لكل مجموعة *</label>
+                        <input type="text" id="exercise4_reps" name="exercise4_reps" placeholder="مثال: 10, 8, 6" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>مرفقات (اختياري)</h2>
+                <div class="form-group">
+                    <label for="attachment">صورة أو ملف</label>
+                    <input type="file" id="attachment" name="attachment" accept="image/*,.pdf,.doc,.docx">
+                    <small>يمكنك رفع صورة أو ملف (PDF, Word)</small>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" id="submitBtn">إرسال النموذج (اختبار)</button>
+            </div>
+
+            <div id="message" class="message"></div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('workoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+            
+            // Collect form data
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                weight: document.getElementById('weight').value,
+                date: document.getElementById('date').value,
+                exercises: {
+                    exercise1: {
+                        name: 'دامبل عالي للصدر (Incline DB Press)',
+                        sets: document.getElementById('exercise1_sets').value,
+                        reps: document.getElementById('exercise1_reps').value
+                    },
+                    exercise2: {
+                        name: 'تراي بوش داون (Tricep Pushdown)',
+                        sets: document.getElementById('exercise2_sets').value,
+                        reps: document.getElementById('exercise2_reps').value
+                    },
+                    exercise3: {
+                        name: 'سحب عالي واسع (Wide Lat Pull Down)',
+                        sets: document.getElementById('exercise3_sets').value,
+                        reps: document.getElementById('exercise3_reps').value
+                    },
+                    exercise4: {
+                        name: 'سحب عالتي بار (T-Bar Row)',
+                        sets: document.getElementById('exercise4_sets').value,
+                        reps: document.getElementById('exercise4_reps').value
+                    }
+                },
+                attachment: document.getElementById('attachment').files[0] ? 
+                    document.getElementById('attachment').files[0].name : 'لا يوجد'
+            };
+            
+            // Display in console
+            console.log('📧 بيانات النموذج:', formData);
+            
+            // Create email preview
+            let emailPreview = `
+نموذج متابعة التمارين اليومية
+
+المعلومات الشخصية:
+- الاسم: ${formData.name}
+- البريد الإلكتروني: ${formData.email}
+- الوزن: ${formData.weight} كجم
+- التاريخ: ${formData.date}
+
+التمارين:
+1. ${formData.exercises.exercise1.name}:
+   - عدد المجموعات: ${formData.exercises.exercise1.sets}
+   - عدد التكرارات: ${formData.exercises.exercise1.reps}
+
+2. ${formData.exercises.exercise2.name}:
+   - عدد المجموعات: ${formData.exercises.exercise2.sets}
+   - عدد التكرارات: ${formData.exercises.exercise2.reps}
+
+3. ${formData.exercises.exercise3.name}:
+   - عدد المجموعات: ${formData.exercises.exercise3.sets}
+   - عدد التكرارات: ${formData.exercises.exercise3.reps}
+
+4. ${formData.exercises.exercise4.name}:
+   - عدد المجموعات: ${formData.exercises.exercise4.sets}
+   - عدد التكرارات: ${formData.exercises.exercise4.reps}
+
+مرفق: ${formData.attachment}
+            `;
+            
+            console.log('📄 محتوى الإيميل:', emailPreview);
+            
+            // Show success message
+            messageDiv.className = 'message success';
+            messageDiv.textContent = '✅ تم حفظ البيانات! افتح Console (F12) لرؤية البيانات.';
+            messageDiv.style.display = 'block';
+            
+            // Show alert with data
+            alert('✅ تم حفظ البيانات!\n\nافتح Console (اضغط F12) لرؤية البيانات الكاملة.\n\n' + 
+                  'الاسم: ' + formData.name + '\n' +
+                  'البريد: ' + formData.email + '\n' +
+                  'الوزن: ' + formData.weight + ' كجم');
+            
+            // Reset form
+            setTimeout(() => {
+                document.getElementById('workoutForm').reset();
+                document.getElementById('date').valueAsDate = new Date();
+            }, 2000);
+        });
+        
+        // Set today's date as default
+        document.getElementById('date').valueAsDate = new Date();
+    </script>
+</body>
+</html>
+

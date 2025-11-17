@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Workout Tracking Form</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Coach.Khaled.Safwat</h1>
+            <p>Log your daily workouts</p>
+        </header>
+
+        <form id="workoutForm" enctype="multipart/form-data">
+            <div class="form-section">
+                <h2>Personal Information</h2>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="weight">Weight (kg)</label>
+                        <input type="number" id="weight" name="weight" step="0.1" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date">Date</label>
+                        <input type="date" id="date" name="date" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Exercises</h2>
+
+                <div class="exercises-row">
+                    <div class="exercise-group">
+                        <h3>1. Incline DB Press (دامبل عالي للصدر)</h3>
+                        <div class="form-group">
+                            <label for="exercise1_sets">Number of Working Sets</label>
+                            <input type="number" id="exercise1_sets" name="exercise1_sets" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exercise1_reps">Reps per Set</label>
+                            <input type="text" id="exercise1_reps" name="exercise1_reps" placeholder="e.g., 12, 10, 8" required>
+                        </div>
+                    </div>
+
+                    <div class="exercise-group">
+                        <h3>2. Tricep Pushdown (تراي بوش داون)</h3>
+                        <div class="form-group">
+                            <label for="exercise2_sets">Number of Working Sets</label>
+                            <input type="number" id="exercise2_sets" name="exercise2_sets" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exercise2_reps">Reps per Set</label>
+                            <input type="text" id="exercise2_reps" name="exercise2_reps" placeholder="e.g., 15, 12, 10" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="exercises-row">
+                    <div class="exercise-group">
+                        <h3>3. Wide Lat Pull Down (سحب عالي واسع)</h3>
+                        <div class="form-group">
+                            <label for="exercise3_sets">Number of Working Sets</label>
+                            <input type="number" id="exercise3_sets" name="exercise3_sets" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exercise3_reps">Reps per Set</label>
+                            <input type="text" id="exercise3_reps" name="exercise3_reps" placeholder="e.g., 12, 10, 8" required>
+                        </div>
+                    </div>
+
+                    <div class="exercise-group">
+                        <h3>4. T-Bar Row (سحب عالتي بار)</h3>
+                        <div class="form-group">
+                            <label for="exercise4_sets">Number of Working Sets</label>
+                            <input type="number" id="exercise4_sets" name="exercise4_sets" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exercise4_reps">Reps per Set</label>
+                            <input type="text" id="exercise4_reps" name="exercise4_reps" placeholder="e.g., 10, 8, 6" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>Attachments (Optional)</h2>
+                <div class="file-upload-wrapper">
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <input type="file" id="attachment" name="attachment" accept="image/*,.pdf,.doc,.docx" hidden>
+                        <div class="file-upload-content">
+                            <svg class="upload-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <p class="upload-text">Click to upload or drag and drop</p>
+                            <p class="upload-hint">PNG, JPG, PDF, DOC, DOCX (Max 10MB)</p>
+                        </div>
+                        <div class="file-upload-preview" id="filePreview" style="display: none;">
+                            <div class="preview-content">
+                                <img id="previewImage" src="" alt="Preview" style="display: none;">
+                                <div class="file-info">
+                                    <span class="file-name" id="fileName"></span>
+                                    <span class="file-size" id="fileSize"></span>
+                                </div>
+                                <button type="button" class="remove-file" id="removeFile">×</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" id="submitBtn">Submit</button>
+            </div>
+
+            <div id="message" class="message"></div>
+        </form>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
